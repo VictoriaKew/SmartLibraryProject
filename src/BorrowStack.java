@@ -16,27 +16,27 @@ public class BorrowStack {
         permanentLog.clear();
         currentBorrowed.clear();
 
+        // 1. Load the text logs for the ledger view
         if (file.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(HISTORY_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     permanentLog.add(line);
-                    
-                    // If a line is marked "Borrowed", find the book in BST and push it to the stack
-                    if (line.contains("Borrowed:")) {
-                        String title = line.substring(line.lastIndexOf(":") + 1).trim();
-                        Book book = database.searchByTitle(title);
-                        if (book != null && !book.isAvailable()) {
-                            currentBorrowed.push(book);
-                        }
-                    } 
-                    // If "Returned", remove the top book from the stack
-                    else if (line.contains("Returned:")) {
-                        if (!currentBorrowed.isEmpty()) currentBorrowed.pop();
-                    }
                 }
             } catch (IOException e) {
                 System.out.println("Error loading history logs.");
+            }
+        }
+
+        // 2. CRITICAL SYNC: Rebuild the Stack based on the actual status of books
+        // We look at all books in the BST and push any that are marked 'false'
+        java.util.List<Book> allBooks = new java.util.ArrayList<>();
+        database.getAllBooks(allBooks); 
+
+        for (Book book : allBooks) {
+            if (!book.isAvailable()) {
+                // Push it to the stack so Choice 4 can "pop" it to return it
+                currentBorrowed.push(book);
             }
         }
     }
@@ -45,37 +45,45 @@ public class BorrowStack {
      * Adds a book to the stack and records a timestamped borrow event.
      */
     public void push(Book book) {
-        currentBorrowed.push(book);
-        String logEntry = "Borrowed: " + book.getTitle();
-        permanentLog.add(logEntry);
-        saveLogToFile(logEntry);
-    }
+    currentBorrowed.push(book);
+    // Format the log entry with the timestamp IMMEDIATELY
+    String logEntry = "[" + generateTimestamp() + "] Borrowed: " + book.getTitle();
+    permanentLog.add(logEntry); 
+    
+    // Pass the already formatted entry to the file saver
+    saveLogToFileDirect(logEntry);
+}
 
+    // Helper method to get the current timestamp string
+    private String generateTimestamp() {
+        return java.time.LocalDateTime.now()
+             .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
     /**
      * Removes the last borrowed book from the stack (LIFO) and records a return.
      */
     public Book pop() {
-        if (currentBorrowed.isEmpty()) return null;
-        Book book = currentBorrowed.pop();
-        String logEntry = "Returned: " + book.getTitle();
-        permanentLog.add(logEntry);
-        saveLogToFile(logEntry);
-        return book;
-    }
+    if (currentBorrowed.isEmpty()) return null;
+    Book book = currentBorrowed.pop();
+    
+    // Format the log entry with the timestamp IMMEDIATELY
+    String logEntry = "[" + generateTimestamp() + "] Returned: " + book.getTitle();
+    permanentLog.add(logEntry);
+    
+    saveLogToFileDirect(logEntry);
+    return book;
+}
 
     /**
      * Appends a new log entry to the history CSV with a real-time timestamp.
      */
-    private void saveLogToFile(String logEntry) {
-        String timestamp = java.time.LocalDateTime.now()
-                           .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(HISTORY_FILE, true)))) {
-            out.println("[" + timestamp + "] " + logEntry);
-        } catch (IOException e) {
-            System.out.println("Error saving transaction.");
-        }
+    private void saveLogToFileDirect(String fullLogLine) {
+    try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(HISTORY_FILE, true)))) {
+        out.println(fullLogLine);
+    } catch (IOException e) {
+        System.out.println("Error saving transaction.");
     }
+}
 
     /**
      * Prints the transaction ledger with color-coded symbols (+/-).
