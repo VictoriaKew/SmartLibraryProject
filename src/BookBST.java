@@ -1,8 +1,10 @@
 public class BookBST{
-    private Book root;
+    private Book ISBNRoot;
+    private Book titleRoot;
 
     public void insert(int isbn, String t, String a){
-        root = ins(root, isbn, t, a);
+        ISBNRoot = ins(ISBNRoot, isbn, t, a);
+        titleRoot = 
     }
 
     private Book ins(Book r, int i, String t, String a){
@@ -18,7 +20,7 @@ public class BookBST{
     }
 
     public Book searchByIsbn(int i){
-        return sea(root, i);
+        return sea(ISBNRoot, i);
     }
 
     private Book sea(Book r, int i){
