@@ -35,21 +35,34 @@ public class SmartLibrary implements LibraryADT {
      * Option 2: Performs a non-destructive search and displays all matches.
      */
     public void searchOnly(String query) {
-        if (!isEnglishOnly(query)) {
-            System.out.println(Colors.RED + "Error: Invalid characters. Symbols are not allowed." + Colors.RESET);
-            return;
-        }
+    if (!isEnglishOnly(query)) {
+        System.out.println(Colors.RED + "Error: Invalid characters. Symbols are not allowed." + Colors.RESET);
+        return;
+    }
 
-        // Consolidated search logic using the BST's getMatches
-        List<Book> matches = bookDatabase.getMatches(query.toLowerCase());
-        
+    // Attempt to find matches in the BST
+    List<Book> matches = bookDatabase.getMatches(query.toLowerCase());
+    
         if (matches.isEmpty()) {
-            System.out.println(Colors.RED + "No matches found." + Colors.RESET);
+            // 1. Alert the user that the specific search failed
+            System.out.println(Colors.RED + "No matches found for '" + query + "'." + Colors.RESET);
+        
+            // 2. Automatically show the full inventory as a fallback
+            System.out.println(Colors.CYAN + "\n--- [ CURRENT LIBRARY INVENTORY ] ---" + Colors.RESET);
+            System.out.println(String.format("%-40s | %-15s | %-20s | %-10s", "Title", "ISBN", "Author", "Status"));
+            System.out.println("--------------------------------------------------------------------------------------------------");
+        
+            // This calls your existing displayAll() method which uses In-Order Traversal
+            bookDatabase.displayAll(); 
+        
+            System.out.println("--------------------------------------------------------------------------------------------------");
         } else {
+            // Display only the matches if found
+            System.out.println(Colors.CYAN + "Matches found:" + Colors.RESET);
             for (Book b : matches) System.out.println(b);
         }
     }
-
+    
     /**
      * Option 3: Finds a book and updates its status to 'Borrowed'.
      * Synchronizes changes to library_data.csv and transaction_history.csv.
