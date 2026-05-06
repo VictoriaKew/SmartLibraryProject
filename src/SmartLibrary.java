@@ -45,7 +45,7 @@ public class SmartLibrary implements LibraryADT {
     
         if (matches.isEmpty()) {
             // 1. Alert the user that the specific search failed
-            System.out.println(Colors.RED + "No matches found for '" + query + "'." + Colors.RESET);
+            System.out.println(Colors.RED + "No book found for '" + query + "'." + Colors.RESET);
         
             // 2. Automatically show the full inventory as a fallback
             System.out.println(Colors.CYAN + "\n--- [ CURRENT LIBRARY INVENTORY ] ---" + Colors.RESET);
