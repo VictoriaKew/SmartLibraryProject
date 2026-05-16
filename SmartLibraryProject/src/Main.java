@@ -1,32 +1,55 @@
 import java.util.Scanner;
 
+/**
+ * Main application entry point running the console menu interface loops.
+ * Manages user interactions, inputs, and text displays, and routes actions to the system controller.
+ */
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
     private static SmartLibrary myLibrary = new SmartLibrary();
 
+    /**
+     * Outputs a stylized ASCII art welcome banner to the terminal layout.
+     * Combines custom graphics text rows with ANSI colors to display system status messages.
+     */
     public static void printWelcomeBanner() {
         printSeparator();
-        System.out.println(Colors.CYAN + "        _______  __   __  _______  ______    _______ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |       ||  |_|  ||       ||    _ |  |       |" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |  _____||       ||       ||   | ||  |    ___|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       | |_____ |       ||       ||   |_||_ |   |___ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_____  ||       ||       ||    __  ||    ___|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "        _____| || ||_|| ||   _   ||   |  | ||   |___ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_______||_|   |_||__| |__||___|  |_||_______|" + Colors.RESET);
-        System.out.println(Colors.YELLOW + "                L I B R A R Y   S Y S T E M          " + Colors.RESET);
-        System.out.println("\n" + Colors.GREEN + "       Welcome! Smart Library System initialized and ready.  " + Colors.RESET);
+        System.out.println(Colors.CYAN + " _______  __   __  _______  ______    _______ " + Colors.RESET);
+        System.out.println(Colors.CYAN + "|       ||  | |  ||       ||    _ |  |       |" + Colors.RESET);
+        System.out.println(Colors.CYAN + "|  _____||  |_|  ||   _   ||   | ||  |__   __|" + Colors.RESET);
+        System.out.println(Colors.CYAN + "| |_____ |       ||  |_|  ||   |_||_    | |   " + Colors.RESET);
+        System.out.println(Colors.CYAN + "|_____  ||       ||       ||    __  |   | |   " + Colors.RESET);
+        System.out.println(Colors.CYAN + " _____| ||   _   ||   _   ||   |  | |   | |   " + Colors.RESET);
+        System.out.println(Colors.CYAN + "|_______||__| |__||__| |__||___|  |_|   |_|   " + Colors.RESET);
+        System.out.println(Colors.YELLOW + "         L I B R A R Y   S Y S T E M          " + Colors.RESET);
+        System.out.println("\n" + Colors.GREEN + "Welcome! Smart Library System initialized and ready.  " + Colors.RESET);
         printSeparator();
     }
 
+    /**
+     * Outputs a uniform, colored separator line across the console layout.
+     * Helps separate different menus and options visually.
+     */
     public static void printSeparator() {
         System.out.println(Colors.PURPLE + "====================================================================================================" + Colors.RESET);
     }
     
+    /**
+     * Formats and prints matching column header titles for data tables.
+     * Ensures headers stay aligned with the layout defined in the book's toString() method.
+     */
     public static void printShelfHeader() {
         System.out.println(Colors.CYAN + String.format("%-40s | %-15s | %-20s | %s", "Title", "ISBN", "Author", "Status") + Colors.RESET);
         System.out.println("----------------------------------------------------------------------------------------------------");
     }
 
+    /**
+     * The main execution loop of the application.
+     * Loads saved files, restores logs, and runs an infinite loop prompting users
+     * to pick a role (Librarian, Student, or Shut Down) and routing inputs accordingly.
+     * 
+     * @param args Standard command-line configuration arguments string array
+     */
     public static void main(String[] args) {
         DataInitializer.loadLibraryData(myLibrary);
         myLibrary.initializeHistory();
@@ -60,9 +83,10 @@ public class Main {
         }
     }
 
-    // ==========================================
-    //              ADMINISTRATOR LOGIC
-    // ==========================================
+    /**
+     * Displays options and routes actions for users logged in as a Librarian.
+     * Offers admin options to add books, view the full inventory, or check the operational ledger.
+     */
     private static void runAdminMenu() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ LIBRARIAN DASHBOARD ] ---" + Colors.RESET);
@@ -106,13 +130,15 @@ public class Main {
         }
     }
 
-    // ==========================================
-    //                 USER LOGIC
-    // ==========================================
+    /**
+     * Displays options and routes actions for users logged in as a Student.
+     * Allows students to browse the inventory, search for books, borrow items, 
+     * or return their last borrowed book. The borrow option loops continuously, 
+     * letting students check out multiple items until they type 'done'.
+     */
     private static void runStudentMenu() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ STUDENT TERMINAL ] ---" + Colors.RESET);
-            // Added View Full Inventory as Option 1, shifted others down
             System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. Return Book\n5. Logout to Main Menu" + Colors.RESET);
             System.out.print("Student Choice: ");
 

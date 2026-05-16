@@ -2,47 +2,68 @@ import java.util.Scanner;
 import java.util.List;
 
 /**
- * The core controller for the Smart Library System.
- * Coordinates between the BST database, the session Stack, and CSV persistence.
+ * Core Controller for the Smart Library System.
+ * Coordinates operations between the BST database, the transactional stack, 
+ * and persistent storage syncs, implementing the LibraryADT contract rules.
  */
 public class SmartLibrary implements LibraryADT {
     private BookBST bookDatabase = new BookBST();
     private BorrowStack userHistory = new BorrowStack();
 
-    // Provides access to the BST for initialization and syncing
+    /**
+     * Provides public access to the underlying Binary Search Tree container.
+     * Essential for initialization, data utilities, and synchronization components.
+     * 
+     * @return The private BookBST instance object
+     */
     public BookBST getDatabase() { return bookDatabase; }
 
+    /**
+     * Adds a new book to the library system.
+     * Satisfies the LibraryADT contract rule by inserting the book directly into the tree structure.
+     * 
+     * @param book The unique Book object instance to add
+     */
     @Override
     public void addBook(Book book) {
         bookDatabase.insert(book);
     }
 
     /**
-     * Rebuilds the session history and LIFO stack from the transaction ledger.
+     * Rebuilds session history tracking data from transaction logs on startup.
+     * Passes the database reference to the stack loader to link records and statuses correctly.
      */
     public void initializeHistory() {
         userHistory.loadHistoryFromFile(bookDatabase);
     }
 
     /**
-     * Validates input to prevent symbols from breaking the search logic.
+     * Validates user inputs using regular expressions to filter out harmful characters.
+     * Restricts inputs to simple alphanumeric strings and spaces to protect search operations.
+     * 
+     * @param input The raw user entry text string under validation
+     * @return true if the string is purely alphanumeric/spaces; false if symbols are present
      */
     public boolean isEnglishOnly(String input) {
         return input.matches("^[a-zA-Z\\s]+$") || input.matches("^[0-9]+$");
     }
 
     /**
-     * Option 2: Performs a non-destructive search and displays all matches.
+     * Processes non-destructive search queries and prints any matching records to the console.
+     * Validates input characters first. If the search returns no matches, it automatically
+     * calls displayAll() to show the full library inventory as a helpful fallback.
+     * 
+     * @param query The title or ISBN keyword search string input by the user
      */
     public void searchOnly(String query) {
-    if (!isEnglishOnly(query)) {
-        System.out.println(Colors.RED + "Error: Invalid characters. Symbols are not allowed." + Colors.RESET);
-        return;
-    }
+        if (!isEnglishOnly(query)) {
+            System.out.println(Colors.RED + "Error: Invalid characters. Symbols are not allowed." + Colors.RESET);
+            return;
+        }
 
-    // Attempt to find matches in the BST
-    List<Book> matches = bookDatabase.getMatches(query.toLowerCase());
-    
+        // Attempt to find matches in the BST
+        List<Book> matches = bookDatabase.getMatches(query.toLowerCase());
+        
         if (matches.isEmpty()) {
             // 1. Alert the user that the specific search failed
             System.out.println(Colors.RED + "No book found for '" + query + "'." + Colors.RESET);
@@ -64,8 +85,12 @@ public class SmartLibrary implements LibraryADT {
     }
     
     /**
-     * Option 3: Finds a book and updates its status to 'Borrowed'.
-     * Synchronizes changes to library_data.csv and transaction_history.csv.
+     * Coordinates the checkout process to borrow a book from the library.
+     * Finds matches in the tree; if a single match is found, it proceeds automatically,
+     * whereas multiple matches prompt the user to type the exact ISBN or Title to confirm.
+     * Updates the book's status, pushes it onto the stack, and syncs changes to the file system.
+     * 
+     * @param query The title or ISBN lookup keyword string entered by the student
      */
     @Override
     public void borrowBook(String query) {
@@ -116,7 +141,9 @@ public class SmartLibrary implements LibraryADT {
     }
 
     /**
-     * Option 4: Returns the most recently borrowed book using LIFO (Stack) logic.
+     * Returns the most recently checked-out book using LIFO stack rules.
+     * Pops the book from the session history stack, changes its availability status 
+     * back to true, and saves the updated state to the data file.
      */
     @Override
     public void returnLastBook() {
@@ -131,6 +158,15 @@ public class SmartLibrary implements LibraryADT {
         }
     }
 
+    /**
+     * Simple wrapper method that outputs the complete library shelf inventory.
+     * Tells the underlying tree database to display its data using sorted In-Order Traversal.
+     */
     public void showShelf() { bookDatabase.displayAll(); }
+
+    /**
+     * Simple wrapper method that prints the complete history log ledger.
+     * Tells the user history container to print out all transaction entries.
+     */
     public void showHistory() { userHistory.displayHistory(); }
 }

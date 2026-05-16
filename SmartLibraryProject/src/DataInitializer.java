@@ -2,11 +2,19 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles persistent database operations for the application.
+ * Manages reading and writing operations for the master library CSV data file.
+ */
 public class DataInitializer {
     private static final String FILE_PATH = "library_data.csv";
 
     /**
-     * Reads the master library CSV and populates the BST at startup.
+     * Reads the master library CSV file on startup to populate the system database tree.
+     * Safely parses values, constructs Book instances, restores their availability flags, 
+     * and inserts them directly into the tree structure.
+     * 
+     * @param lib The active SmartLibrary controller instance being initialized
      */
     public static void loadLibraryData(SmartLibrary lib) {
         File file = new File(FILE_PATH);
@@ -33,7 +41,10 @@ public class DataInitializer {
     }
 
     /**
-     * Appends a newly created book to the CSV file.
+     * Appends a single newly registered book record directly to the end of the CSV file.
+     * Prevents having to rewrite the whole file when simply adding an individual new book item.
+     * 
+     * @param book The new Book object to write to the file
      */
     public static void saveBookToCSV(Book book) {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(FILE_PATH, true)))) {
@@ -45,8 +56,11 @@ public class DataInitializer {
     }
 
     /**
-     * Overwrites the CSV with the current state of the BST.
-     * This is called whenever a book's availability changes (Borrow/Return).
+     * Flattens the database tree and overwrites the CSV file with the updated state.
+     * Triggered whenever a book's availability status changes (during borrow or return operations)
+     * to keep persistent records synchronized with the runtime system.
+     * 
+     * @param lib The active SmartLibrary controller instance
      */
     public static void syncDatabase(SmartLibrary lib) {
         List<Book> allBooks = new ArrayList<>();

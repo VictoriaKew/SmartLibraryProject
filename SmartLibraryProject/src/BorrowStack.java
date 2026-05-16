@@ -1,15 +1,23 @@
 import java.util.Stack;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Manages the user session transaction history using a LIFO (Last-In, First-Out) tracking model.
+ * Synchronizes runtime transactions with persistent ledger files.
+ */
 public class BorrowStack {
     private Stack<Book> currentBorrowed = new Stack<>(); // Tracks current session's LIFO order
     private ArrayList<String> permanentLog = new ArrayList<>(); // Stores historical text for the ledger
     private static final String HISTORY_FILE = "transaction_history.csv";
 
     /**
-     * Rebuilds the session Stack and the permanent log from the CSV file.
-     * This ensures the system "remembers" the LIFO order after a restart.
+     * Restores state tracking histories from transaction log files during system startup.
+     * Loads the ledger text file into active arrays, then parses the main book tree 
+     * database to rebuild the LIFO stack with any books that are still checked out.
+     * 
+     * @param database The system's primary BookBST database instance
      */
     public void loadHistoryFromFile(BookBST database) {
         File file = new File(HISTORY_FILE);
@@ -30,7 +38,7 @@ public class BorrowStack {
 
         // 2. CRITICAL SYNC: Rebuild the Stack based on the actual status of books
         // We look at all books in the BST and push any that are marked 'false'
-        java.util.List<Book> allBooks = new java.util.ArrayList<>();
+        List<Book> allBooks = new ArrayList<>();
         database.getAllBooks(allBooks); 
 
         for (Book book : allBooks) {
@@ -42,51 +50,70 @@ public class BorrowStack {
     }
 
     /**
-     * Adds a book to the stack and records a timestamped borrow event.
+     * Places a newly borrowed book onto the top of the session stack.
+     * Records a timestamped transaction log entry, updates the active ledger list,
+     * and appends the new entry to the transaction history file.
+     * 
+     * @param book The Book object currently being checked out
      */
     public void push(Book book) {
-    currentBorrowed.push(book);
-    // Format the log entry with the timestamp IMMEDIATELY
-    String logEntry = "[" + generateTimestamp() + "] Borrowed: " + book.getTitle();
-    permanentLog.add(logEntry); 
-    
-    // Pass the already formatted entry to the file saver
-    saveLogToFileDirect(logEntry);
-}
+        currentBorrowed.push(book);
+        // Format the log entry with the timestamp IMMEDIATELY
+        String logEntry = "[" + generateTimestamp() + "] Borrowed: " + book.getTitle();
+        permanentLog.add(logEntry); 
+        
+        // Pass the already formatted entry to the file saver
+        saveLogToFileDirect(logEntry);
+    }
 
-    // Helper method to get the current timestamp string
+    /**
+     * Internal utility method that generates a standard, uniform timestamp string.
+     * Uses the local system clock to format the current date and time.
+     * 
+     * @return String formatted as "yyyy-MM-dd HH:mm:ss"
+     */
     private String generateTimestamp() {
         return java.time.LocalDateTime.now()
              .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
+
     /**
-     * Removes the last borrowed book from the stack (LIFO) and records a return.
+     * Pops the most recently borrowed book off the session stack to process a return (LIFO).
+     * Generates a corresponding return entry, updates the transaction ledger, 
+     * and logs the event to the history file.
+     * 
+     * @return The Book popped from the top of the stack, or null if no books are currently borrowed.
      */
     public Book pop() {
-    if (currentBorrowed.isEmpty()) return null;
-    Book book = currentBorrowed.pop();
-    
-    // Format the log entry with the timestamp IMMEDIATELY
-    String logEntry = "[" + generateTimestamp() + "] Returned: " + book.getTitle();
-    permanentLog.add(logEntry);
-    
-    saveLogToFileDirect(logEntry);
-    return book;
-}
+        if (currentBorrowed.isEmpty()) return null;
+        Book book = currentBorrowed.pop();
+        
+        // Format the log entry with the timestamp IMMEDIATELY
+        String logEntry = "[" + generateTimestamp() + "] Returned: " + book.getTitle();
+        permanentLog.add(logEntry);
+        
+        saveLogToFileDirect(logEntry);
+        return book;
+    }
 
     /**
-     * Appends a new log entry to the history CSV with a real-time timestamp.
+     * Appends a new transaction log line directly to the end of the history CSV file.
+     * Opens file writers in append mode to log transactions in real time.
+     * 
+     * @param fullLogLine The completely formatted transaction log message string
      */
     private void saveLogToFileDirect(String fullLogLine) {
-    try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(HISTORY_FILE, true)))) {
-        out.println(fullLogLine);
-    } catch (IOException e) {
-        System.out.println("Error saving transaction.");
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(HISTORY_FILE, true)))) {
+            out.println(fullLogLine);
+        } catch (IOException e) {
+            System.out.println("Error saving transaction.");
+        }
     }
-}
 
     /**
-     * Prints the transaction ledger with color-coded symbols (+/-).
+     * Prints the complete operational ledger histories to the user interface.
+     * Parses stored records and prepends color-coded status indicators 
+     * ([+] in Green for borrows; [-] in Red for returns).
      */
     public void displayHistory() {
         if (permanentLog.isEmpty()) {
