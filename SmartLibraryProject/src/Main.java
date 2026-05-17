@@ -98,9 +98,24 @@ public class Main {
                 switch (choice) {
                     case 1:
                         System.out.println("\n--- Register New Book ---");
-                        System.out.print("ISBN: "); String isbn = scanner.nextLine();
-                        System.out.print("Title: "); String title = scanner.nextLine();
-                        System.out.print("Author: "); String author = scanner.nextLine();
+                        System.out.print("ISBN: "); String isbn = scanner.nextLine().trim();
+                        while(!isbn.matches("\\d{13}")){
+                            System.out.println(Colors.RED + "Invalid ISBN. Must be 13 numbers. Please try again." + Colors.RESET);
+                            System.out.print("ISBN: "); 
+                            isbn = scanner.nextLine().trim();
+                        }
+                        System.out.print("Title: "); String title = scanner.nextLine().trim();
+                        while(title.isEmpty()){
+                            System.out.println(Colors.RED + "Title cannot be empty. Please try again." + Colors.RESET);
+                            System.out.print("Title: "); 
+                            title = scanner.nextLine().trim();
+                        }
+                        System.out.print("Author: "); String author = scanner.nextLine().trim();
+                        while(author.isEmpty()){
+                            System.out.println(Colors.RED + "Author cannot be empty. Please try again." + Colors.RESET);
+                            System.out.print("Author: "); 
+                            author = scanner.nextLine().trim();
+                        }
                         
                         Book nb = new Book(isbn, title, author);
                         myLibrary.addBook(nb);
@@ -139,7 +154,7 @@ public class Main {
     private static void runStudentMenu() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ STUDENT TERMINAL ] ---" + Colors.RESET);
-            System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. Return Book\n5. Logout to Main Menu" + Colors.RESET);
+            System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. View Borrow History\n5. Return Last Borrowed Book\n6. Logout to Main Menu" + Colors.RESET);
             System.out.print("Student Choice: ");
 
             try {
@@ -174,10 +189,15 @@ public class Main {
                         break;
                     case 4:
                         printSeparator();
-                        myLibrary.returnLastBook();
+                        myLibrary.showBorrowHistory();
                         printSeparator();
                         break;
                     case 5:
+                        printSeparator();
+                        myLibrary.returnLastBook();
+                        printSeparator();
+                        break;
+                    case 6:
                         System.out.println(Colors.YELLOW + "Logging out..." + Colors.RESET);
                         return; // Exits back to the role selection loop
                     default:

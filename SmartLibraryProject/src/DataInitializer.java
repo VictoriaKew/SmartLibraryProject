@@ -27,11 +27,21 @@ public class DataInitializer {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
+                if (line.trim().isEmpty()) continue;
+
+                // Regex: Splits by commas ONLY if they are outside of double quotes
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                
                 if (data.length == 4) {
-                    Book book = new Book(data[0], data[1], data[2]);
-                    book.setAvailable(Boolean.parseBoolean(data[3]));
+                    String isbn = data[0].trim();
+                    String title = data[1].replace("\"", "").trim();
+                    String author = data[2].replace("\"", "").trim();
+                    
+                    Book book = new Book(isbn, title, author);
+                    book.setAvailable(Boolean.parseBoolean(data[3].trim()));
                     lib.addBook(book);
+                } else {
+                    System.out.println(Colors.YELLOW + "[Warning] Skipped corrupted CSV row: " + line + Colors.RESET);
                 }
             }
             System.out.println(Colors.GREEN + "[System] Database loaded successfully." + Colors.RESET);
@@ -42,14 +52,19 @@ public class DataInitializer {
 
     /**
      * Appends a single newly registered book record directly to the end of the CSV file.
+     * Adds double quotes to titles and authors that contains commas before writing in to the CSV file
+     * to prevent read issues
      * Prevents having to rewrite the whole file when simply adding an individual new book item.
      * 
      * @param book The new Book object to write to the file
      */
     public static void saveBookToCSV(Book book) {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(FILE_PATH, true)))) {
+            String title = book.getTitle().contains(",") ? "\"" + book.getTitle() + "\"" : book.getTitle();
+            String author = book.getAuthor().contains(",") ? "\"" + book.getAuthor() + "\"" : book.getAuthor();
+            
             out.println(String.format("%s,%s,%s,%b", 
-                book.getIsbn(), book.getTitle(), book.getAuthor(), book.isAvailable()));
+                book.getIsbn(), title, author, book.isAvailable()));
         } catch (IOException e) {
             System.out.println(Colors.RED + "Save Error: " + e.getMessage() + Colors.RESET);
         }
@@ -68,8 +83,11 @@ public class DataInitializer {
 
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(FILE_PATH, false)))) {
             for (Book book : allBooks) {
+                String title = book.getTitle().contains(",") ? "\"" + book.getTitle() + "\"" : book.getTitle();
+                String author = book.getAuthor().contains(",") ? "\"" + book.getAuthor() + "\"" : book.getAuthor();
+                
                 out.println(String.format("%s,%s,%s,%b", 
-                    book.getIsbn(), book.getTitle(), book.getAuthor(), book.isAvailable()));
+                    book.getIsbn(), title, author, book.isAvailable()));
             }
         } catch (IOException e) {
             System.out.println(Colors.RED + "Sync Error: " + e.getMessage() + Colors.RESET);

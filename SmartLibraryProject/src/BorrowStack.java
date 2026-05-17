@@ -1,7 +1,7 @@
-import java.util.Stack;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Manages the user session transaction history using a LIFO (Last-In, First-Out) tracking model.
@@ -127,6 +127,20 @@ public class BorrowStack {
             } else if (log.contains("Returned:")) {
                 System.out.println(Colors.RED + " [-] " + Colors.RESET + log);
             }
+        }
+    }
+
+    /**
+     * Prints the stack of books borrowed by the user in LIFO manner (latest borrowed book is printed first).
+     */
+    public void displayBorrowHistory() {
+        if (currentBorrowed.isEmpty()){
+            System.out.println(Colors.YELLOW + "No books currently borrowed." + Colors.RESET);
+            return;
+        }
+        System.out.println(Colors.CYAN + "--- [ CURRENTLY BORROWED BOOKS ] ---" + Colors.RESET);
+        for (int i = currentBorrowed.size() - 1; i >= 0; i--) {
+            System.out.println(currentBorrowed.get(i));
         }
     }
 }

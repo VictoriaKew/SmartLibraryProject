@@ -1,5 +1,5 @@
-import java.util.Scanner;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Core Controller for the Smart Library System.
@@ -39,13 +39,14 @@ public class SmartLibrary implements LibraryADT {
 
     /**
      * Validates user inputs using regular expressions to filter out harmful characters.
-     * Restricts inputs to simple alphanumeric strings and spaces to protect search operations.
+     * Restricts inputs to simple alphanumeric strings, spaces, and allowed symbols to protect search operations.
      * 
      * @param input The raw user entry text string under validation
-     * @return true if the string is purely alphanumeric/spaces; false if symbols are present
+     * @return true if the string is purely alphanumeric, spaces and allowed symbols; false if other symbols are present
      */
     public boolean isEnglishOnly(String input) {
-        return input.matches("^[a-zA-Z\\s]+$") || input.matches("^[0-9]+$");
+        String cleanInput = input.replace("\u00a0", " ").trim();
+        return cleanInput.matches("^[a-zA-Z0-9\\s&:',.!\\?-]+$");
     }
 
     /**
@@ -107,36 +108,57 @@ public class SmartLibrary implements LibraryADT {
         }
 
         Book selectedBook = null;
+        Scanner sc = new Scanner(System.in);
 
         // Selection logic: Auto-selects if unique, otherwise requires ISBN confirmation
         if (matches.size() == 1) {
             selectedBook = matches.get(0);
+            System.out.println(Colors.YELLOW + "Match found:\n" + selectedBook + Colors.RESET);
         } else {
-            System.out.println(Colors.YELLOW + "Multiple books found:" + Colors.RESET);
-            for (Book b : matches) System.out.println(b);
-        
-            System.out.print("Please enter the EXACT Title or ISBN to confirm: ");
-            Scanner sc = new Scanner(System.in);
+            System.out.println(Colors.YELLOW + "Multiple books found.:" + Colors.RESET);
+            for (int i = 0; i < matches.size(); i++) {
+                System.out.println("[" + (i + 1) + "] " + matches.get(i));
+            }
+            System.out.print("Please enter the number of desired book (eg. 1), or 0 to cancel: ");
             String confirmation = sc.nextLine().trim();
             
-            for (Book b : matches) {
-                if (b.getIsbn().equals(confirmation) || b.getTitle().equalsIgnoreCase(confirmation)) {
-                    selectedBook = b;
-                    break;
+        try {
+                int choice = Integer.parseInt(confirmation);
+                if (choice == 0) {
+                    System.out.println(Colors.YELLOW + "Action canceled." + Colors.RESET);
+                    return;
                 }
-            }
+                if (choice > 0 && choice <= matches.size()) {
+                    selectedBook = matches.get(choice - 1); // Arrays are 0-indexed, human input is 1-indexed
+                }
+            } catch (NumberFormatException e) {}
         }
 
         // Final validation and synchronization
         if (selectedBook == null) {
-            System.out.println(Colors.RED + "Error: Confirmation did not match any results." + Colors.RESET);
-        } else if (!selectedBook.isAvailable()) {
+            System.out.println(Colors.RED + "Error: Invalid selection." + Colors.RESET);
+            return;
+        }
+        if (!selectedBook.isAvailable()) {
             System.out.println(Colors.RED + "Error: '" + selectedBook.getTitle() + "' is already borrowed." + Colors.RESET);
-        } else {
-            selectedBook.setAvailable(false);
-            userHistory.push(selectedBook); // Updates Stack and transaction_history.csv
-            DataInitializer.syncDatabase(this); // Updates library_data.csv
-            System.out.println(Colors.GREEN + "Success! Borrowed: " + selectedBook.getTitle() + Colors.RESET);
+            return;
+        }
+        while (true) {
+            System.out.print("\nBorrow '" + selectedBook.getTitle() + "'? (y/n): ");
+            String validation = sc.nextLine().trim().toLowerCase();
+
+            if (validation.equals("y") || validation.equals("yes")) {
+                selectedBook.setAvailable(false);
+                userHistory.push(selectedBook); // Updates Stack
+                DataInitializer.syncDatabase(this); // Updates CSV
+                System.out.println(Colors.GREEN + "Success! Borrowed: " + selectedBook.getTitle() + Colors.RESET);
+                break;
+            } else if (validation.equals("n") || validation.equals("no")) {
+                System.out.println(Colors.YELLOW + "Cancelled. Book was not borrowed." + Colors.RESET);
+                break;
+            } else {
+                System.out.println(Colors.RED + "Error: Invalid input. Please type 'y' or 'n'." + Colors.RESET);
+            }
         }
     }
 
@@ -169,4 +191,10 @@ public class SmartLibrary implements LibraryADT {
      * Tells the user history container to print out all transaction entries.
      */
     public void showHistory() { userHistory.displayHistory(); }
+
+    /**
+     * Simple wrapper method that prints the list of borrowed books.
+     * Tells the user history container to print out all borrowed books.
+     */
+    public void showBorrowHistory() { userHistory.displayBorrowHistory(); }
 }

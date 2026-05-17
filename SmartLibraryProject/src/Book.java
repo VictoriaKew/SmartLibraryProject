@@ -82,10 +82,20 @@ public class Book implements Comparable<Book> {
      */
     @Override
     public String toString() {
-        // Formats the output for the console table view
+        String status = isAvailable ? Colors.GREEN + "Available" + Colors.RESET 
+                                    : Colors.RED + "Borrowed" + Colors.RESET;
+
+        String displayTitle = title;
+        if (title.length() > 40) {
+            displayTitle = title.substring(0, 37) + "...";
+        }
+
+        String displayAuthor = author;
+        if (author.length() > 20) {
+            displayAuthor = author.substring(0, 17) + "...";
+        }
+
         return String.format("%-40s | %-15s | %-20s | [%s]", 
-            title, isbn, author, 
-            isAvailable ? Colors.GREEN + "Available" + Colors.RESET 
-                        : Colors.RED + "Borrowed" + Colors.RESET);
+            displayTitle, isbn, displayAuthor, status);
     }
 }
