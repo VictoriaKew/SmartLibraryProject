@@ -113,9 +113,10 @@ public class SmartLibrary implements LibraryADT {
         // Selection logic: Auto-selects if unique, otherwise requires ISBN confirmation
         if (matches.size() == 1) {
             selectedBook = matches.get(0);
-            System.out.println(Colors.YELLOW + "Match found:\n" + selectedBook + Colors.RESET);
+            System.out.println(Colors.YELLOW + "Match found:" + Colors.RESET);
+            System.out.println(selectedBook);
         } else {
-            System.out.println(Colors.YELLOW + "Multiple books found.:" + Colors.RESET);
+            System.out.println(Colors.YELLOW + "Multiple books found:" + Colors.RESET);
             for (int i = 0; i < matches.size(); i++) {
                 System.out.println("[" + (i + 1) + "] " + matches.get(i));
             }
