@@ -1,11 +1,20 @@
-9780131101630,The C Programming Language,"Brian W. Kernighan, Dennis M. Ritchie",true
-9780131350722,Data Structure,Erich Gamma,false
+9780131103627,The C Programming Language,Kernighan,false
+9780131103702,Operating Systems,Tanenbaum,false
+9780131177054,Working Effectively with Legacy Code,Feathers,true
+9780132143011,Introduction to Algorithms,Cormen,true
+9780132350800,Refactoring,Martin Fowler,true
 9780132350884,Clean Code,Robert Martin,true
+9780134494166,Clean Architecture,Robert Martin,true
 9780134685991,Effective Java,Joshua Bloch,true
-9780135686974,Multimedia World,Eric Freeman,true
-9780137909100,Code: The Hidden Language of Computer Hardware and Software,Charles Petzold,true
-9780201633610,Design Patterns: Elements of Reusable Object-Oriented Software,Erich Gamma,true
-9780201733489,Computer System & Architecture,Joshua Bloch,true
-9780201733645,Fundamental of Multimedia,Erich Gamma,true
-9780465026562,"Godel, Escher, Bach An Eternal Golden Braid",Douglas R. Hofstadter,true
-9780596009205,Head First Design Patterns,Eric Freeman,false
+9780136291558,Object-Oriented Analysis,Grady Booch,true
+9780137081073,The Clean Coder,Robert Martin,true
+9780201616224,The Pragmatic Programmer,Andrew Hunt,true
+9780201633610,Design Patterns,Erich Gamma,true
+9780321125217,Domain-Driven Design,Eric Evans,true
+9780321146533,Test Driven Development,Kent Beck,true
+9780321356680,Effective C++,Scott Meyers,true
+9780596003005,Learning Java,Niemeyer,false
+9780596004651,Java Network Programming,Elliotte Rusty,true
+9780596007126,Head First Java,Kathy Sierra,true
+9780596009205,Head First Design Patterns,Eric Freeman,true
+9780596517748,JavaScript: The Good Parts,Crockford,true

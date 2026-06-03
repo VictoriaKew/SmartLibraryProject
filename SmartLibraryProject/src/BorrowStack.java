@@ -36,7 +36,7 @@ public class BorrowStack {
             }
         }
 
-        // 2. CRITICAL SYNC: Rebuild the Stack based on the actual status of books
+        // 2. Rebuild the Stack based on the actual status of books
         // We look at all books in the BST and push any that are marked 'false'
         List<Book> allBooks = new ArrayList<>();
         database.getAllBooks(allBooks); 

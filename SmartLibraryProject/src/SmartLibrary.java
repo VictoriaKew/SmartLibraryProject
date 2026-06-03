@@ -12,7 +12,7 @@ public class SmartLibrary implements LibraryADT {
 
     /**
      * Provides public access to the underlying Binary Search Tree container.
-     * Essential for initialization, data utilities, and synchronization components.
+     * Essential for initialization, data utilities and synchronization components.
      * 
      * @return The private BookBST instance object
      */
@@ -74,7 +74,7 @@ public class SmartLibrary implements LibraryADT {
             System.out.println(String.format("%-40s | %-15s | %-20s | %-10s", "Title", "ISBN", "Author", "Status"));
             System.out.println("--------------------------------------------------------------------------------------------------");
         
-            // This calls your existing displayAll() method which uses In-Order Traversal
+            // This calls existing displayAll() method which uses In-Order Traversal
             bookDatabase.displayAll(); 
         
             System.out.println("--------------------------------------------------------------------------------------------------");

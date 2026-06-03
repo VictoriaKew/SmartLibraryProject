@@ -76,7 +76,7 @@ public class Book implements Comparable<Book> {
     /**
      * Formats the book properties into a structured table row string.
      * Pads text fields to fixed columns and applies ANSI colors dynamically 
-     * to visually highlight whether the book is "Available" (Green) or "Borrowed" (Red).
+     * Highlight whether the book is "Available" (Green) or "Borrowed" (Red).
      * 
      * @return A styled, fixed-width console output row string.
      */
