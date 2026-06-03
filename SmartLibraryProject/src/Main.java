@@ -4,17 +4,17 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
     private static SmartLibrary myLibrary = new SmartLibrary();
 
-    public static void printWelcomeBanner() {
+public static void printWelcomeBanner() {
         printSeparator();
         System.out.println(Colors.CYAN + "        _______  __   __  _______  ______    _______ " + Colors.RESET);
         System.out.println(Colors.CYAN + "       |       ||  |_|  ||       ||    _ |  |       |" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |  _____||       ||       ||   | ||  |    ___|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       | |_____ |       ||       ||   |_||_ |   |___ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_____  ||       ||       ||    __  ||    ___|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "        _____| || ||_|| ||   _   ||   |  | ||   |___ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_______||_|   |_||__| |__||___|  |_||_______|" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |  _____||       ||   _   ||   | ||  |_     _|" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       | |_____ |       ||  |_|  ||   |_||_   |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |_____  ||       ||       ||    __  |  |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "        _____| || ||_|| ||   _   ||   |  | |  |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |_______||_|   |_||__| |__||___|  |_|  |___|  " + Colors.RESET);
         System.out.println(Colors.YELLOW + "                L I B R A R Y   S Y S T E M          " + Colors.RESET);
-        System.out.println("\n" + Colors.GREEN + "       Welcome! Smart Library System initialized and ready.  " + Colors.RESET);
+        System.out.println("\n" + Colors.GREEN + "        Welcome! Smart Library System initialized and ready.  " + Colors.RESET);
         printSeparator();
     }
 
