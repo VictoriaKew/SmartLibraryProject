@@ -115,7 +115,7 @@ public static void printWelcomeBanner() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ STUDENT TERMINAL ] ---" + Colors.RESET);
             // Added View Full Inventory as Option 1, shifted others down
-            System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. Return Book\n5. Logout to Main Menu" + Colors.RESET);
+            System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. View Borrow History\n5. Return Last Borrowed Book\n6. Logout to Main Menu" + Colors.RESET);
             System.out.print("Student Choice: ");
 
             try {
@@ -150,10 +150,15 @@ public static void printWelcomeBanner() {
                         break;
                     case 4:
                         printSeparator();
-                        myLibrary.returnLastBook();
+                        myLibrary.showBorrowHistory();
                         printSeparator();
                         break;
                     case 5:
+                        printSeparator();
+                        myLibrary.returnLastBook();
+                        printSeparator();
+                        break;
+                    case 6:
                         System.out.println(Colors.YELLOW + "Logging out..." + Colors.RESET);
                         return; // Exits back to the role selection loop
                     default:

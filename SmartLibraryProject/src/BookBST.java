@@ -136,34 +136,4 @@ public class BookBST {
         bookList.add(current.data);
         collectInOrder(current.right, bookList);
     }
-
-    /**
-     * Scans the system to find a book matching an exact title sequence.
-     * Typically used when rebuilding session parameters from secondary transaction logs.
-     * 
-     * @param title The exact, case-insensitive title name string to locate
-     * @return The matching Book instance found, or null if no record matches
-     */
-    public Book searchByTitle(String title) {
-        return searchTitleRecursive(root, title);
-    }
-
-    /**
-     * Recursive linear-style search across the ISBN-ordered tree structure to check titles.
-     * Exhaustively parses both tree branches when a node choice fails, since node keys 
-     * are organized by ISBN criteria rather than title characters.
-     * 
-     * @param current The specific Node block being assessed
-     * @param title   The exact target title search string
-     * @return The validated Book object if found; otherwise null
-     */
-    private Book searchTitleRecursive(Node current, String title) {
-        if (current == null) return null;
-        if (current.data.getTitle().equalsIgnoreCase(title)) return current.data;
-
-        // Search both branches since titles are not organized by the ISBN BST rules
-        Book found = searchTitleRecursive(current.left, title);
-        if (found != null) return found;
-        return searchTitleRecursive(current.right, title);
-    }
 }
