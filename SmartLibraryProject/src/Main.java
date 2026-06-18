@@ -7,10 +7,10 @@ public class Main {
     public static void printWelcomeBanner() {
         printSeparator();
         System.out.println(Colors.CYAN + "        _______  __   __  _______  ______    _______ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |       || |_| ||       ||    _ |  |       |" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |  _____||     ||   _   ||   | ||  |_     _|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       | |_____ |     ||  |_|  ||   |_||_   |   |  " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_____  ||     ||       ||    __  |  |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |       || |_|   ||       ||    _ |  |       |" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |  _____||       ||   _   ||   | ||  |_     _|" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       | |_____ |       ||  |_|  ||   |_||_   |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |_____  ||       ||       ||    __  |  |   |  " + Colors.RESET);
         System.out.println(Colors.CYAN + "        _____| || ||_|| ||   _   ||   |  | |  |   |  " + Colors.RESET);
         System.out.println(Colors.CYAN + "       |_______||_|   |_||__| |__||___|  |_|  |___|  " + Colors.RESET);
         System.out.println(Colors.YELLOW + "                L I B R A R Y   S Y S T E M          " + Colors.RESET);
@@ -102,7 +102,7 @@ public class Main {
                             System.out.println(Colors.RED + "[Validation Error] Author name cannot be blank, contain symbols, or numbers. Only letters, spaces, dots, and hyphens are allowed.\n" + Colors.RESET);
                         }
                         
-                        // All fields are guaranteed valid now
+                        
                         Book nb = new Book(isbn, title, author);
                         myLibrary.addBook(nb);
                         DataInitializer.saveBookToCSV(nb);

@@ -28,7 +28,6 @@ public class DataInitializer {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
 
-                // Regex: Splits by commas ONLY if they are outside of double quotes
                 String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 
                 if (data.length == 4) {

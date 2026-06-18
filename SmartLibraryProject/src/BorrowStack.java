@@ -37,13 +37,11 @@ public class BorrowStack {
         }
 
         // 2. Rebuild the Stack based on the actual status of books
-        // We look at all books in the BST and push any that are marked 'false'
         List<Book> allBooks = new ArrayList<>();
         database.getAllBooks(allBooks); 
 
         for (Book book : allBooks) {
             if (!book.isAvailable()) {
-                // Push it to the stack so Choice 4 can "pop" it to return it
                 currentBorrowed.push(book);
             }
         }
@@ -58,11 +56,8 @@ public class BorrowStack {
      */
     public void push(Book book) {
         currentBorrowed.push(book);
-        // Format the log entry with the timestamp IMMEDIATELY
         String logEntry = "[" + generateTimestamp() + "] Borrowed: " + book.getTitle();
         permanentLog.add(logEntry); 
-        
-        // Pass the already formatted entry to the file saver
         saveLogToFileDirect(logEntry);
     }
 
@@ -87,8 +82,6 @@ public class BorrowStack {
     public Book pop() {
         if (currentBorrowed.isEmpty()) return null;
         Book book = currentBorrowed.pop();
-        
-        // Format the log entry with the timestamp IMMEDIATELY
         String logEntry = "[" + generateTimestamp() + "] Returned: " + book.getTitle();
         permanentLog.add(logEntry);
         

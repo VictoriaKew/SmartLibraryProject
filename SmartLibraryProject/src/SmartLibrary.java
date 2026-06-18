@@ -62,24 +62,22 @@ public class SmartLibrary implements LibraryADT {
             return;
         }
 
-        // Attempt to find matches in the BST
+       
         List<Book> matches = bookDatabase.getMatches(query.toLowerCase());
         
         if (matches.isEmpty()) {
-            // 1. Alert the user that the specific search failed
+        
             System.out.println(Colors.RED + "No book found for '" + query + "'." + Colors.RESET);
         
-            // 2. Automatically show the full inventory as a fallback
             System.out.println(Colors.CYAN + "\n--- [ CURRENT LIBRARY INVENTORY ] ---" + Colors.RESET);
             System.out.println(String.format("%-40s | %-15s | %-20s | %-10s", "Title", "ISBN", "Author", "Status"));
             System.out.println("--------------------------------------------------------------------------------------------------");
         
-            // This calls existing displayAll() method which uses In-Order Traversal
             bookDatabase.displayAll(); 
         
             System.out.println("--------------------------------------------------------------------------------------------------");
         } else {
-            // Display only the matches if found
+            
             System.out.println(Colors.CYAN + "Matches found:" + Colors.RESET);
             for (Book b : matches) System.out.println(b);
         }
@@ -110,7 +108,6 @@ public class SmartLibrary implements LibraryADT {
         Book selectedBook = null;
         Scanner sc = new Scanner(System.in);
 
-        // Selection logic: Auto-selects if unique, otherwise requires ISBN confirmation
         if (matches.size() == 1) {
             selectedBook = matches.get(0);
             System.out.println(Colors.YELLOW + "Match found:" + Colors.RESET);
@@ -130,7 +127,7 @@ public class SmartLibrary implements LibraryADT {
                     return;
                 }
                 if (choice > 0 && choice <= matches.size()) {
-                    selectedBook = matches.get(choice - 1); // Arrays are 0-indexed, human input is 1-indexed
+                    selectedBook = matches.get(choice - 1); 
                 }
             } catch (NumberFormatException e) {}
         }
@@ -150,8 +147,8 @@ public class SmartLibrary implements LibraryADT {
 
             if (validation.equals("y") || validation.equals("yes")) {
                 selectedBook.setAvailable(false);
-                userHistory.push(selectedBook); // Updates Stack
-                DataInitializer.syncDatabase(this); // Updates CSV
+                userHistory.push(selectedBook); 
+                DataInitializer.syncDatabase(this);
                 System.out.println(Colors.GREEN + "Success! Borrowed: " + selectedBook.getTitle() + Colors.RESET);
                 break;
             } else if (validation.equals("n") || validation.equals("no")) {
@@ -174,7 +171,7 @@ public class SmartLibrary implements LibraryADT {
     
         if (last != null) {
             last.setAvailable(true); 
-            DataInitializer.syncDatabase(this); // Save status change to file
+            DataInitializer.syncDatabase(this); 
             System.out.println(Colors.GREEN + "Returned (LIFO): " + last.getTitle() + Colors.RESET);
         } else {
             System.out.println(Colors.RED + "No books in the stack to return." + Colors.RESET);
