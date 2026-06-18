@@ -4,13 +4,13 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
     private static SmartLibrary myLibrary = new SmartLibrary();
 
-public static void printWelcomeBanner() {
+    public static void printWelcomeBanner() {
         printSeparator();
         System.out.println(Colors.CYAN + "        _______  __   __  _______  ______    _______ " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |       ||  |_|  ||       ||    _ |  |       |" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |  _____||       ||   _   ||   | ||  |_     _|" + Colors.RESET);
-        System.out.println(Colors.CYAN + "       | |_____ |       ||  |_|  ||   |_||_   |   |  " + Colors.RESET);
-        System.out.println(Colors.CYAN + "       |_____  ||       ||       ||    __  |  |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |       || |_| ||       ||    _ |  |       |" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |  _____||     ||   _   ||   | ||  |_     _|" + Colors.RESET);
+        System.out.println(Colors.CYAN + "       | |_____ |     ||  |_|  ||   |_||_   |   |  " + Colors.RESET);
+        System.out.println(Colors.CYAN + "       |_____  ||     ||       ||    __  |  |   |  " + Colors.RESET);
         System.out.println(Colors.CYAN + "        _____| || ||_|| ||   _   ||   |  | |  |   |  " + Colors.RESET);
         System.out.println(Colors.CYAN + "       |_______||_|   |_||__| |__||___|  |_|  |___|  " + Colors.RESET);
         System.out.println(Colors.YELLOW + "                L I B R A R Y   S Y S T E M          " + Colors.RESET);
@@ -31,8 +31,6 @@ public static void printWelcomeBanner() {
         DataInitializer.loadLibraryData(myLibrary);
         myLibrary.initializeHistory();
         printWelcomeBanner();
-
-
 
         while (true) {
             System.out.println("\n" + Colors.CYAN + "=== LOGIN: SELECT YOUR ROLE ===" + Colors.RESET);
@@ -62,9 +60,6 @@ public static void printWelcomeBanner() {
         }
     }
 
-    // ==========================================
-    //              ADMIN LOGIC
-    // ==========================================
     private static void runAdminMenu() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ LIBRARIAN DASHBOARD ] ---" + Colors.RESET);
@@ -76,14 +71,42 @@ public static void printWelcomeBanner() {
                 switch (choice) {
                     case 1:
                         System.out.println("\n--- Register New Book ---");
-                        System.out.print("ISBN: "); String isbn = scanner.nextLine();
-                        System.out.print("Title: "); String title = scanner.nextLine();
-                        System.out.print("Author: "); String author = scanner.nextLine();
                         
+                        String isbn = "";
+                        while (true) {
+                            System.out.print("ISBN: ");
+                            isbn = scanner.nextLine().trim();
+                            if (isbn.matches("^\\d{13}$")) {
+                                break;
+                            }
+                            System.out.println(Colors.RED + "[Validation Error] ISBN must be exactly 13 digits and contain numbers only.\n" + Colors.RESET);
+                        }
+
+                        String title = "";
+                        while (true) {
+                            System.out.print("Title: ");
+                            title = scanner.nextLine().trim();
+                            if (!title.isEmpty() && title.matches(".*[a-zA-Z0-9].*")) {
+                                break;
+                            }
+                            System.out.println(Colors.RED + "[Validation Error] Title cannot be blank or contain only symbols.\n" + Colors.RESET);
+                        }
+
+                        String author = "";
+                        while (true) {
+                            System.out.print("Author: ");
+                            author = scanner.nextLine().trim();
+                            if (!author.isEmpty() && author.matches("^[a-zA-Z\\s.-]+$")) {
+                                break;
+                            }
+                            System.out.println(Colors.RED + "[Validation Error] Author name cannot be blank, contain symbols, or numbers. Only letters, spaces, dots, and hyphens are allowed.\n" + Colors.RESET);
+                        }
+                        
+                        // All fields are guaranteed valid now
                         Book nb = new Book(isbn, title, author);
                         myLibrary.addBook(nb);
                         DataInitializer.saveBookToCSV(nb);
-                        System.out.println(Colors.GREEN + "Successfully saved to Smart Library System." + Colors.RESET);
+                        System.out.println(Colors.GREEN + "\nSuccessfully saved to Smart Library System." + Colors.RESET);
                         break;
                     case 2:
                         printSeparator();
@@ -98,7 +121,7 @@ public static void printWelcomeBanner() {
                         break;
                     case 4:
                         System.out.println(Colors.YELLOW + "Logging out..." + Colors.RESET);
-                        return; // Exits back to the role selection loop
+                        return; 
                     default:
                         System.out.println(Colors.RED + "Invalid choice. Select 1-4." + Colors.RESET);
                 }
@@ -108,13 +131,9 @@ public static void printWelcomeBanner() {
         }
     }
 
-    // ==========================================
-    //                 USER LOGIC
-    // ==========================================
     private static void runStudentMenu() {
         while (true) {
             System.out.println("\n" + Colors.CYAN + "--- [ STUDENT TERMINAL ] ---" + Colors.RESET);
-            // Added View Full Inventory as Option 1, shifted others down
             System.out.println(Colors.YELLOW + "1. View Full Inventory\n2. Search Book\n3. Borrow Book\n4. View Borrow History\n5. Return Last Borrowed Book\n6. Logout to Main Menu" + Colors.RESET);
             System.out.print("Student Choice: ");
 
@@ -124,7 +143,7 @@ public static void printWelcomeBanner() {
                     case 1:
                         printSeparator();
                         printShelfHeader();
-                        myLibrary.showShelf(); // Safely displays the BST without allowing edits
+                        myLibrary.showShelf(); 
                         printSeparator();
                         break;
                     case 2:
@@ -160,7 +179,7 @@ public static void printWelcomeBanner() {
                         break;
                     case 6:
                         System.out.println(Colors.YELLOW + "Logging out..." + Colors.RESET);
-                        return; // Exits back to the role selection loop
+                        return; 
                     default:
                         System.out.println(Colors.RED + "Invalid choice. Select 1-5." + Colors.RESET);
                 }
